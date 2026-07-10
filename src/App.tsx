@@ -640,8 +640,8 @@ function App() {
         onSubmit={submitExpense}
         repeatLastExpense={repeatLastExpense}
       />
-      <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col lg:flex-row">
-        <aside className="border-b border-[var(--line)] bg-[var(--panel)]/95 p-4 lg:sticky lg:top-0 lg:h-screen lg:w-72 lg:border-b-0 lg:border-r">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1500px] flex-col lg:flex-row">
+        <aside className="border-b border-[var(--line)] bg-[var(--panel)]/95 p-4 backdrop-blur lg:sticky lg:top-0 lg:h-screen lg:w-72 lg:border-b-0 lg:border-r">
           <div className="flex items-center gap-3">
             <div className="grid size-11 place-items-center rounded-lg bg-[var(--brand)] text-white">
               <Wallet size={22} aria-hidden="true" />
@@ -696,7 +696,7 @@ function App() {
           </div>
         </aside>
 
-        <main className="flex-1 pb-40 p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 p-4 pb-32 sm:p-6 sm:pb-36 lg:p-8 lg:pb-8">
           {(remoteMessage || authError) && (
             <p className="mb-4 rounded-md border border-[var(--line)] bg-[var(--panel-muted)] p-3 text-sm">
               {remoteMessage || authError}
@@ -948,7 +948,7 @@ function App() {
         </main>
       </div>
       {appReady && !authPageOpen ? (
-        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 p-3 shadow-lg">
+        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--line)] bg-[var(--panel)]/95 p-3 shadow-lg lg:hidden">
           <div className="mx-auto flex max-w-lg gap-2">
             <button
               type="button"

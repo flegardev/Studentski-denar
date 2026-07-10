@@ -4,16 +4,16 @@ import { formatMoney } from '../lib/money'
 
 export function SurvivalSummaryCard({ survival }: { survival: ReturnType<typeof getSurvivalMode> }) {
   const toneClasses = {
-    safe: 'border-emerald-200 bg-emerald-50 text-emerald-900',
-    careful: 'border-amber-200 bg-amber-50 text-amber-900',
-    danger: 'border-red-200 bg-red-50 text-red-900',
+    safe: 'border-emerald-200 bg-emerald-50 text-emerald-950',
+    careful: 'border-amber-200 bg-amber-50 text-amber-950',
+    danger: 'border-red-200 bg-red-50 text-red-950',
   }
   const label =
     survival.tone === 'safe' ? 'Varno' : survival.tone === 'careful' ? 'Previdno' : 'Treba je prilagoditi'
   const Icon = survival.tone === 'danger' ? AlertTriangle : ShieldCheck
 
   return (
-    <section data-testid="survival-card" className={`mb-4 rounded-lg border p-4 ${toneClasses[survival.tone]}`}>
+    <section data-testid="survival-card" className={`mb-4 rounded-lg border p-5 shadow-sm shadow-slate-900/5 ${toneClasses[survival.tone]}`}>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -31,8 +31,8 @@ export function SurvivalSummaryCard({ survival }: { survival: ReturnType<typeof 
             Po neplačanih rednih stroških: <strong>{formatMoney(survival.realBalance)}</strong>.
           </p>
         </div>
-        <div className="min-w-0 rounded-md bg-white/70 p-3 lg:w-80">
-          <p className="text-sm font-semibold">Cut these first</p>
+        <div className="min-w-0 rounded-md bg-white/75 p-4 lg:w-80">
+          <p className="text-sm font-semibold">Najprej omeji</p>
           <ol className="mt-2 grid gap-1 text-sm">
             {survival.suggestions.map((suggestion, index) => (
               <li key={suggestion}>
@@ -40,7 +40,7 @@ export function SurvivalSummaryCard({ survival }: { survival: ReturnType<typeof 
               </li>
             ))}
           </ol>
-          <p className="mt-2 text-xs">
+          <p className="mt-2 text-xs leading-5">
             Študentski trik: najprej poreži ponavljajoče majhne stroške, ker jih je najlažje zgrešiti.
           </p>
         </div>

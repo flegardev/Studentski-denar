@@ -46,7 +46,7 @@ export function ExpensesPage({
       <Panel className={quickOpen ? 'ring-2 ring-[var(--brand)]' : ''}>
         <div className="mb-4 grid gap-2">
           <p className="text-sm font-semibold">Hitre kategorije</p>
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="flex flex-wrap gap-2 pb-1">
             {expenseCategories.slice(0, 8).map((category) => (
               <button
                 key={category}

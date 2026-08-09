@@ -27,6 +27,7 @@ export type IncomeEntry = {
   date: string
   source: string
   note: string
+  updatedAt?: string
 }
 
 export type ExpenseEntry = {
@@ -35,6 +36,7 @@ export type ExpenseEntry = {
   date: string
   category: string
   note: string
+  updatedAt?: string
 }
 
 export type RecurringExpense = {
@@ -45,6 +47,7 @@ export type RecurringExpense = {
   dayOfMonth: number
   active: boolean
   paidMonths: string[]
+  updatedAt?: string
 }
 
 export type Roommate = {

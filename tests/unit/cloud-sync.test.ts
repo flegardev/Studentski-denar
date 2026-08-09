@@ -14,6 +14,7 @@ import {
   resolveUpdatedAtConflict,
 } from '../../src/lib/syncMerge'
 import type { AppData, BudgetProfile } from '../../src/types'
+import { buildAtomicUploadParameters } from '../../src/lib/supabaseBudget'
 
 function profile(overrides: Partial<BudgetProfile> = {}): BudgetProfile {
   return {
@@ -78,6 +79,17 @@ describe('cloud sync conversion', () => {
 
     expect(restored?.profiles[0].income[0].id).toBe('income-local-1')
     expect(restored?.profiles[0].recurring[0].paidMonths).toEqual(['2026-05'])
+  })
+
+  it('builds one user-scoped atomic RPC payload and rejects mixed-user rows', () => {
+    const payload = convertLocalToCloudPayload(appData(), 'user-1')
+    expect(buildAtomicUploadParameters('user-1', payload)).toMatchObject({
+      p_user_id: 'user-1',
+      p_transactions: payload.transactions,
+    })
+
+    payload.transactions[0].user_id = 'user-2'
+    expect(() => buildAtomicUploadParameters('user-1', payload)).toThrow('another user')
   })
 
   it('normalizes malformed cloud rows instead of crashing', () => {
@@ -149,6 +161,12 @@ describe('cloud sync merge and state detection', () => {
   it('uses newer updated_at only for explicit conflict resolution', () => {
     expect(resolveUpdatedAtConflict('local', 'cloud', '2026-05-01', '2026-05-02')).toBe('cloud')
     expect(resolveUpdatedAtConflict('local', 'cloud', '2026-05-03', '2026-05-02')).toBe('local')
+  })
+
+  it('uses per-entry updatedAt timestamps when duplicate ids are merged', () => {
+    const local = { id: 'a', amount: 1, date: '2026-05-01', source: 'Local', note: '', updatedAt: '2026-05-01' }
+    const cloud = { ...local, amount: 2, source: 'Cloud', updatedAt: '2026-05-02' }
+    expect(mergeTransactions([local], [cloud])).toEqual([cloud])
   })
 
   it('merges cloud data into local app data without deleting local-only entries', () => {

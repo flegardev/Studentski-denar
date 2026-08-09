@@ -148,7 +148,7 @@ export function convertLocalToCloudPayload(
           profile_id: profile.id,
           profile_name: profile.name,
           profile_month: profile.month,
-          updated_at: syncedAt,
+          updated_at: entry.updatedAt ?? syncedAt,
         },
       })),
       ...profile.expenses.map((entry): BudgetTransactionCloudRow => ({
@@ -164,7 +164,7 @@ export function convertLocalToCloudPayload(
           profile_id: profile.id,
           profile_name: profile.name,
           profile_month: profile.month,
-          updated_at: syncedAt,
+          updated_at: entry.updatedAt ?? syncedAt,
         },
       })),
     ]),
@@ -182,7 +182,7 @@ export function convertLocalToCloudPayload(
           profile_id: profile.id,
           profile_name: profile.name,
           profile_month: profile.month,
-          updated_at: syncedAt,
+          updated_at: entry.updatedAt ?? syncedAt,
         },
       })),
     ),
@@ -239,7 +239,8 @@ export function convertCloudToLocalPayload(payload: CloudBudgetPayload | null): 
         amount,
         date,
         source: textOrNull(row.source) ?? 'Cloud income',
-        note: textOrNull(row.description) ?? '',
+      note: textOrNull(row.description) ?? '',
+      updatedAt: textOrNull(row.metadata?.updated_at) ?? row.updated_at,
       })
       profile.income = income
     } else {
@@ -249,7 +250,8 @@ export function convertCloudToLocalPayload(payload: CloudBudgetPayload | null): 
         amount,
         date,
         category: textOrNull(row.category) ?? 'Drugo',
-        note: textOrNull(row.description) ?? '',
+      note: textOrNull(row.description) ?? '',
+      updatedAt: textOrNull(row.metadata?.updated_at) ?? row.updated_at,
       })
       profile.expenses = expenses
     }
@@ -268,6 +270,7 @@ export function convertCloudToLocalPayload(payload: CloudBudgetPayload | null): 
       dayOfMonth: Math.min(31, Math.max(1, row.due_day ?? 1)),
       active: row.active ?? true,
       paidMonths: Array.isArray(row.paid_months) ? row.paid_months.filter((month) => typeof month === 'string') : [],
+      updatedAt: textOrNull(row.metadata?.updated_at) ?? row.updated_at,
     })
     profile.recurring = recurring
   }

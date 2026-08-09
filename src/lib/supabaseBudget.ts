@@ -7,12 +7,9 @@ import {
   type RecurringExpenseCloudRow,
   type SyncMetadataCloudRow,
 } from './cloudSync'
+import { isLocalAutomatedTestHarness } from './testHarness'
 
 const TEST_CLOUD_KEY = 'studentski-denar:test-cloud:v1'
-
-function isAutomatedBrowser() {
-  return typeof navigator !== 'undefined' && navigator.webdriver
-}
 
 function readMockCloud(userId: string): CloudBudgetPayload {
   const forcedError = localStorage.getItem('studentski-denar:test-cloud-error')
@@ -38,7 +35,7 @@ function writeMockCloud(payload: CloudBudgetPayload) {
 
 export async function fetchCloudBudgetData(userId: string): Promise<CloudBudgetPayload> {
   if (!supabase) {
-    if (isAutomatedBrowser()) return readMockCloud(userId)
+    if (isLocalAutomatedTestHarness()) return readMockCloud(userId)
     throw new Error('Supabase is not configured.')
   }
 
@@ -62,54 +59,32 @@ export async function fetchCloudBudgetData(userId: string): Promise<CloudBudgetP
   }
 }
 
-export async function upsertBudgetProfile(profile: BudgetProfileCloudRow) {
-  if (!supabase) throw new Error('Supabase is not configured.')
-  const { error } = await supabase.from('budget_profiles').upsert(profile, { onConflict: 'user_id' })
-  if (error) throw error
-}
-
-export async function upsertTransactions(transactions: BudgetTransactionCloudRow[]) {
-  if (!supabase || transactions.length === 0) return
-  const { error } = await supabase.from('budget_transactions').upsert(transactions, { onConflict: 'id' })
-  if (error) throw error
-}
-
-export async function upsertRecurringExpenses(recurring: RecurringExpenseCloudRow[]) {
-  if (!supabase || recurring.length === 0) return
-  const { error } = await supabase.from('recurring_expenses').upsert(recurring, { onConflict: 'id' })
-  if (error) throw error
-}
-
-async function upsertSyncMetadata(metadata: SyncMetadataCloudRow) {
-  if (!supabase) return
-  const { error } = await supabase.from('sync_metadata').upsert(metadata, { onConflict: 'user_id' })
-  if (error) throw error
-}
-
-export async function deleteCloudBudgetData(userId: string) {
-  if (!supabase) throw new Error('Supabase is not configured.')
-  const [transactions, recurring] = await Promise.all([
-    supabase.from('budget_transactions').delete().eq('user_id', userId),
-    supabase.from('recurring_expenses').delete().eq('user_id', userId),
-  ])
-  if (transactions.error) throw transactions.error
-  if (recurring.error) throw recurring.error
+export function buildAtomicUploadParameters(userId: string, payload: CloudBudgetPayload) {
+  if (!payload.profile || !payload.metadata) throw new Error('Cloud payload is missing required data.')
+  const rows = [payload.profile, payload.metadata, ...payload.transactions, ...payload.recurring]
+  if (rows.some((row) => row.user_id !== userId)) {
+    throw new Error('Cloud payload contains data for another user.')
+  }
+  return {
+    p_user_id: userId,
+    p_profile: payload.profile,
+    p_transactions: payload.transactions,
+    p_recurring: payload.recurring,
+    p_metadata: payload.metadata,
+  }
 }
 
 export async function uploadCloudBudgetData(userId: string, payload: CloudBudgetPayload) {
-  if (!payload.profile || !payload.metadata) throw new Error('Cloud payload is missing required data.')
+  const parameters = buildAtomicUploadParameters(userId, payload)
   if (!supabase) {
-    if (isAutomatedBrowser()) {
+    if (isLocalAutomatedTestHarness()) {
       writeMockCloud(payload)
       return payload
     }
     throw new Error('Supabase is not configured.')
   }
 
-  await deleteCloudBudgetData(userId)
-  await upsertBudgetProfile(payload.profile)
-  await upsertTransactions(payload.transactions)
-  await upsertRecurringExpenses(payload.recurring)
-  await upsertSyncMetadata(payload.metadata)
+  const { error } = await supabase.rpc('replace_budget_snapshot', parameters)
+  if (error) throw error
   return fetchCloudBudgetData(userId)
 }

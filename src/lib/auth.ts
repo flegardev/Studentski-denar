@@ -1,8 +1,9 @@
 import { createClient, type Session, type User } from '@supabase/supabase-js'
+import { isLocalAutomatedTestHarness } from './testHarness'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined
-const isAutomatedBrowser = typeof navigator !== 'undefined' && navigator.webdriver
+const isAutomatedBrowser = isLocalAutomatedTestHarness()
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabasePublishableKey && !isAutomatedBrowser)
 

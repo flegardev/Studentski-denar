@@ -259,6 +259,7 @@ function App() {
         date: incomeForm.date,
         source: incomeForm.source.trim(),
         note: incomeForm.note.trim(),
+        updatedAt: new Date().toISOString(),
       }
       return {
         ...profile,
@@ -287,6 +288,7 @@ function App() {
         date: expenseForm.date,
         category: expenseForm.category,
         note: expenseForm.note.trim(),
+        updatedAt: new Date().toISOString(),
       }
       return {
         ...profile,
@@ -318,6 +320,7 @@ function App() {
                   amount,
                   category: recurringForm.category,
                   dayOfMonth: Math.min(28, Math.max(1, dayOfMonth || 1)),
+                  updatedAt: new Date().toISOString(),
                 }
               : entry,
           )
@@ -330,6 +333,7 @@ function App() {
               dayOfMonth: Math.min(28, Math.max(1, dayOfMonth || 1)),
               active: true,
               paidMonths: [],
+              updatedAt: new Date().toISOString(),
             },
             ...profile.recurring,
           ],
@@ -386,6 +390,7 @@ function App() {
     const transport = parseOptionalMoney(onboardingForm.transport) ?? 0
     const food = parseOptionalMoney(onboardingForm.food) ?? 0
     const currentBalance = parseOptionalMoney(onboardingForm.currentBalance)
+    const updatedAt = new Date().toISOString()
     const month = currentMonth()
     const income: IncomeEntry[] = []
     const recurring: RecurringExpense[] = []
@@ -397,6 +402,7 @@ function App() {
         date: `${month}-01`,
         source: 'Študentsko delo',
         note: 'Ocena iz onboardinga',
+        updatedAt,
       })
     }
     if (scholarship > 0) {
@@ -406,6 +412,7 @@ function App() {
         date: `${month}-01`,
         source: 'Štipendija',
         note: 'Ocena iz onboardinga',
+        updatedAt,
       })
     }
     const remainingIncome = monthlyIncome - studentWork - scholarship
@@ -416,6 +423,7 @@ function App() {
         date: `${month}-01`,
         source: 'Drugi prihodki',
         note: 'Mesečna ocena',
+        updatedAt,
       })
     }
     if (rent > 0) {
@@ -427,6 +435,7 @@ function App() {
         dayOfMonth: 5,
         active: true,
         paidMonths: [],
+        updatedAt,
       })
     }
     if (transport > 0) {
@@ -438,6 +447,7 @@ function App() {
         dayOfMonth: 1,
         active: true,
         paidMonths: [],
+        updatedAt,
       })
     }
     if (food > 0) {
@@ -449,6 +459,7 @@ function App() {
         dayOfMonth: 1,
         active: true,
         paidMonths: [],
+        updatedAt,
       })
     }
 
@@ -504,6 +515,7 @@ function App() {
           ...source,
           id: uid('expense'),
           date: today(),
+          updatedAt: new Date().toISOString(),
         },
         ...profile.expenses,
       ],
@@ -816,7 +828,9 @@ function App() {
                 updateProfile((profile) => ({
                   ...profile,
                   recurring: profile.recurring.map((entry) =>
-                    entry.id === id ? { ...entry, active: !entry.active } : entry,
+                    entry.id === id
+                      ? { ...entry, active: !entry.active, updatedAt: new Date().toISOString() }
+                      : entry,
                   ),
                 }))
               }
@@ -830,6 +844,7 @@ function App() {
                           paidMonths: entry.paidMonths.includes(profile.month)
                             ? entry.paidMonths.filter((month) => month !== profile.month)
                             : [...entry.paidMonths, profile.month],
+                          updatedAt: new Date().toISOString(),
                         }
                       : entry,
                   ),

@@ -29,7 +29,8 @@ The app does not automatically overwrite local data on login.
 Upload local data to cloud:
 
 - converts the current local app data into Supabase rows
-- replaces existing cloud transaction and recurring rows for that user
+- calls the authenticated `replace_budget_snapshot()` RPC
+- replaces the user's profile, transaction, recurring, and sync-metadata snapshot in one database transaction
 - stores a full local app snapshot in `budget_profiles.settings.app_data`
 
 Download cloud data to this device:
@@ -41,7 +42,7 @@ Download cloud data to this device:
 Merge local and cloud data:
 
 - keeps items with different IDs
-- for same-ID conflicts, explicit merge helpers can use `updated_at`
+- for same-ID conflicts, keeps the item with the newest preserved item-level `updatedAt` timestamp
 - uploads the merged result back to cloud
 
 ## Conflict Strategy
@@ -62,6 +63,7 @@ Conflict handling is intentionally simple:
 - Malformed cloud rows are normalized or skipped.
 - Old local backup/import schema remains supported.
 - Logged-out users never sync budget data.
+- A failed upload rolls back as a unit; it cannot leave a partially deleted cloud snapshot.
 
 ## Supabase Tables
 
@@ -99,9 +101,11 @@ Users can:
 
 No service role key is used in frontend code.
 
+`replace_budget_snapshot()` is a security-invoker function. It requires an authenticated session, verifies `auth.uid()` against the requested user and every payload row, and relies on the same per-user RLS policies as direct table access.
+
 ## Limitations
 
 - Sync is manual, not real-time.
 - The full app snapshot is the safest restore source; row-level tables also support future reporting/migration.
 - Roommates and shared bills are preserved in the snapshot, not represented as first-class sync tables yet.
-- Upload replaces cloud transaction/recurring rows for the current user after explicit confirmation.
+- Upload atomically replaces cloud transaction/recurring rows for the current user after explicit confirmation.

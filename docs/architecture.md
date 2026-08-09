@@ -30,7 +30,7 @@ Sync code lives in:
 - `src/lib/supabaseBudget.ts`
 - `src/hooks/useCloudSync.ts`
 
-The database tables are `budget_profiles`, `budget_transactions`, `recurring_expenses`, and `sync_metadata`, all protected by per-user RLS.
+The database tables are `budget_profiles`, `budget_transactions`, `recurring_expenses`, and `sync_metadata`, all protected by per-user RLS. Uploads use the security-invoker `replace_budget_snapshot()` RPC for transactional replacement, and item-level timestamps are preserved so explicit merges can resolve same-ID conflicts correctly.
 
 ## Finance Logic
 
@@ -54,7 +54,7 @@ The MVP uses manual PayPal supporter verification and signed license tokens. The
 
 ## Tests
 
-- Unit tests: `tests/unit/finance.test.ts`, `tests/unit/cloud-sync.test.ts`
+- Unit tests: finance, cloud sync/merge, routing/storage, and license CLI behavior under `tests/unit/`
 - E2E smoke tests: `tests/e2e/smoke.spec.ts`
 - Cloud sync E2E tests: `tests/e2e/cloud-sync.spec.ts`
 - Mobile visual/layout screenshots: `tests/e2e/visual.spec.ts`

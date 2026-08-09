@@ -3,6 +3,7 @@ import type { Session, User } from '@supabase/supabase-js'
 import { isSupabaseConfigured, signOut as signOutWithSupabase, supabase } from '../lib/auth'
 import { fetchProfile, fetchSupporterAccess, upsertOwnProfile } from '../lib/userData'
 import type { ProfileRow, SupporterAccessRow } from '../types'
+import { isLocalAutomatedTestHarness } from '../lib/testHarness'
 
 export type UseAuthResult = {
   user: User | null
@@ -25,7 +26,7 @@ function getProfileSeed(user: User) {
 }
 
 function getMockUserForAutomatedTests(): User | null {
-  if (typeof navigator === 'undefined' || !navigator.webdriver) return null
+  if (!isLocalAutomatedTestHarness()) return null
   try {
     const email = localStorage.getItem('studentski-denar:test-auth-email')
     if (!email) return null

@@ -51,11 +51,11 @@ function mergeById<T extends { id: string }>(
 }
 
 export function mergeTransactions<T extends IncomeEntry | ExpenseEntry>(localItems: T[], cloudItems: T[]) {
-  return mergeById(localItems, cloudItems)
+  return mergeById(localItems, cloudItems, (item) => item.updatedAt, (item) => item.updatedAt)
 }
 
 export function mergeRecurringExpenses(localItems: RecurringExpense[], cloudItems: RecurringExpense[]) {
-  return mergeById(localItems, cloudItems)
+  return mergeById(localItems, cloudItems, (item) => item.updatedAt, (item) => item.updatedAt)
 }
 
 function mergeProfiles(localProfile: BudgetProfile, cloudProfile: BudgetProfile): BudgetProfile {

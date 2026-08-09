@@ -13,9 +13,10 @@ export default defineConfig({
     channel: process.env.PW_CHANNEL,
   },
   webServer: {
-    command: 'npm run preview -- --host 127.0.0.1 --port 4173',
+    command: 'npm run build && npm run preview -- --host 127.0.0.1 --port 4173',
+    env: { ...process.env, VITE_ENABLE_TEST_HARNESS: 'true' },
     url: 'http://127.0.0.1:4173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: process.env.PW_REUSE_SERVER === 'true',
     timeout: 120_000,
   },
   projects: [

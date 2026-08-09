@@ -32,6 +32,8 @@ The cloud sync migration creates:
 - per-user RLS policies for select, insert, update, and delete
 - indexes for user, date, and transaction type lookups
 
+The atomic snapshot migration creates `replace_budget_snapshot()`. The frontend uses this authenticated, security-invoker RPC so an upload either commits the complete user snapshot or rolls back without deleting the previous snapshot. Run all migration files in filename order; do not skip this migration.
+
 `budget_transactions.id` and `recurring_expenses.id` are text IDs so existing local IDs are preserved during sync.
 
 ## Auth Redirect URLs

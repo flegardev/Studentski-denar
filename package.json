@@ -2,6 +2,7 @@
   "name": "studentski-denar",
   "private": true,
   "version": "0.0.0",
+  "author": "Tini Flegar <flegardev@gmail.com>",
   "type": "module",
   "scripts": {
     "dev": "vite",

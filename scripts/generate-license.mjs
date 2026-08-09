@@ -2,8 +2,19 @@ import { createHash, sign } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 
 const args = new Map()
-for (let index = 2; index < process.argv.length; index += 2) {
-  args.set(process.argv[index], process.argv[index + 1])
+for (let index = 2; index < process.argv.length; index += 1) {
+  const argument = process.argv[index]
+  if (argument === '--lifetime') {
+    args.set(argument, true)
+    continue
+  }
+  const value = process.argv[index + 1]
+  if (!argument.startsWith('--') || !value || value.startsWith('--')) {
+    console.error(`Missing value for ${argument}`)
+    process.exit(1)
+  }
+  args.set(argument, value)
+  index += 1
 }
 
 const email = args.get('--email')

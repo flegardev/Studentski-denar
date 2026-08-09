@@ -72,4 +72,6 @@ See `FUTURE.md` for storage migration and bundle-size notes.
 
 ---
 
-Made by FlegarTech. If this project helped you, you can [support development](https://paypal.me/TiniFlegar).
+Built by **Tini Flegar** — Full-Stack Developer · IT & Finance. Contact: [flegardev@gmail.com](mailto:flegardev@gmail.com).
+
+If this project helped you, you can [support development](https://paypal.me/TiniFlegar).

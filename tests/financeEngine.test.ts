@@ -3,7 +3,6 @@ import {
   eurosToCents,
   centsToEuros,
   calculateDeterministicSplit,
-  computeFairDebtSettlement,
   computeMonthlyBudgetSummary
 } from "../src/services/financeEngine";
 import {

@@ -4,8 +4,7 @@ import {
   type SplitParticipant,
   type SplitSettlement,
   type Transaction,
-  type TransactionCategory,
-  TransactionCategorySchema
+  type TransactionCategory
 } from "../types/finance";
 
 /**

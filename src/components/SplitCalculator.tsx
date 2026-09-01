@@ -5,7 +5,7 @@ import { formatEuroFromCents } from "../utils/currencyFormatters";
 
 export const SplitCalculator: React.FC = () => {
   const [totalEuros, setTotalEuros] = useState<string>("30.00");
-  const [participants, setParticipants] = useState<SplitParticipant[]>([
+  const [participants] = useState<SplitParticipant[]>([
     { id: "p1", name: "Žan (Me)", weight: 1, hasPaidCents: 3000 },
     { id: "p2", name: "Luka", weight: 1, hasPaidCents: 0 },
     { id: "p3", name: "Ana", weight: 1, hasPaidCents: 0 }
